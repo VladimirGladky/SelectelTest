@@ -1,11 +1,12 @@
 package SelectelTest
 
 import (
-	"github.com/VladimirGladky/SelectelTest/utils"
 	"go/ast"
 	"go/token"
 	"strings"
 	"unicode"
+
+	"github.com/VladimirGladky/SelectelTest/utils"
 
 	"golang.org/x/tools/go/analysis"
 )

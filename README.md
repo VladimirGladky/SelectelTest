@@ -93,26 +93,34 @@ version: v1.62.2
 plugins:
   - module: 'github.com/VladimirGladky/SelectelTest'
     import: 'github.com/VladimirGladky/SelectelTest/plugin'
+    version: v1.0.0
 ```
 
 2. Создайте или обновите `.golangci.yml`:
 
 ```yaml
-linters:
-  enable:
-    - loglinter
-
 linters-settings:
   custom:
     loglinter:
-      type: module
-      description: Checks log messages for established rules
+      type: "module"
+      description: "Checks log messages for established rules"
+      settings:
+        rules:
+          - lowercase-first-letter
+          - english-only
+          - no-special-chars
+          - no-sensitive-data
+
+linters:
+  enable:
+    - loglinter
+  disable-all: false
 ```
 
 3. Соберите кастомный golangci-lint:
 
 ```bash
-GOPROXY=direct GOSUMDB=off golangci-lint custom
+golangci-lint custom
 ```
 
 4. Используйте собранный бинарник:
@@ -121,53 +129,13 @@ GOPROXY=direct GOSUMDB=off golangci-lint custom
 ./custom-gcl run ./...
 ```
 
-**Примечание:** Если возникают проблемы с кешем Go proxy, используйте переменные окружения `GOPROXY=direct GOSUMDB=off`.
-
-### Способ 3: Локальное использование без публикации
-
-```bash
-# Клонируйте репозиторий
-git clone https://github.com/VladimirGladky/SelectelTest.git
-cd SelectelTest
-
-# Соберите бинарник
-go build -o selectellinter ./cmd/selectellinter
-
-# Запустите на вашем проекте
-./selectellinter /path/to/your/project/...
-```
-
-## Использование
-
-### Прямой запуск
-
-```bash
-selectellinter ./...
-selectellinter ./pkg/...
-selectellinter ./cmd/server
-```
-
-### С golangci-lint
-
-```bash
-golangci-lint run
-```
-
-### В CI/CD
-
-```yaml
-# GitHub Actions
-- name: Run golangci-lint with custom linter
-  run: |
-    golangci-lint custom
-    ./custom-gcl run ./...
-```
-
 ## Поддерживаемые логеры
 
 - `log/slog` (стандартная библиотека Go)
 - `go.uber.org/zap`
 - Любые кастомные обертки с методами: `Info`, `Error`, `Debug`, `Warn`, `Fatal`, `Panic`
+
+Линтер не проверяет `fmt.Errorf` и `errors` пакеты, чтобы избежать ложных срабатываний.
 
 ## Разработка
 
